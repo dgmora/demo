@@ -1,5 +1,5 @@
 class DocumentsController < ApplicationController
-  before_action :set_document, only: %i[ show update destroy ]
+  before_action :set_document, only: %i[show update destroy]
 
   # GET /documents
   def index
@@ -15,12 +15,14 @@ class DocumentsController < ApplicationController
 
   # POST /documents
   def create
-    @document = Document.new(document_params)
-
-    if @document.save
-      render json: @document, status: :created, location: @document
-    else
-      render json: @document.errors, status: :unprocessable_entity
+    respond_to do |format|
+      format.pdf do
+        pdf = File.read(Rails.root.join('fixtures/report.pdf'))
+        send_data pdf,
+                  type: 'application/pdf',
+                  filename: filename,
+                  disposition: 'attachment'
+      end
     end
   end
 
@@ -39,13 +41,14 @@ class DocumentsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_document
-      @document = Document.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def document_params
-      params.fetch(:document, {})
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_document
+    @document = Document.find(params[:id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def document_params
+    params.fetch(:document, {})
+  end
 end
