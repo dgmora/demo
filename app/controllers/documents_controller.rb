@@ -1,4 +1,5 @@
 class DocumentsController < ApplicationController
+  include ActionController::MimeResponds
   before_action :set_document, only: %i[show update destroy]
 
   # GET /documents
@@ -15,15 +16,11 @@ class DocumentsController < ApplicationController
 
   # POST /documents
   def create
-    respond_to do |format|
-      format.pdf do
-        pdf = File.read(Rails.root.join('fixtures/report.pdf'))
-        send_data pdf,
-                  type: 'application/pdf',
-                  filename: filename,
-                  disposition: 'attachment'
-      end
-    end
+    pdf = File.read(Rails.root.join('fixtures/dummy.pdf'))
+    send_data pdf,
+              type: 'application/pdf',
+              filename: 'dummy.pdf',
+              disposition: 'attachment'
   end
 
   # PATCH/PUT /documents/1
